@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import '../data/lista_disciplinas.dart';
 import '../models/disciplina.dart';
 import '../models/sala.dart';
@@ -7,28 +8,42 @@ class TurmasController {
   List<Sala> salas = [];
   int quantidadeSalas = 0;
 
+  String formatarHorario(int minutos, BuildContext context) {
+    final time = TimeOfDay(hour: minutos ~/ 60, minute: minutos % 60);
+    return time.format(context);
+  }
+
   void alocarTurmas() {
-    // os conflitos de horário só ocorrem entre turmas que possuem ao menos um dia da semana em comum
-    for(var dia in diasSemana) {
-      //agrupa disciplinas que ocorrem em um mesmo dia
+    for (var dia in diasSemana) {
       List<Disciplina> disciplinasDoDia = disciplinas.where((disciplina) => disciplina.diasSemana.contains(dia)).toList();
-      //ordena as disciplinas do dia em ordem crescente pelo horário de início
+
       disciplinasDoDia.sort((a, b) => a.horarioInicio.compareTo(b.horarioInicio));
 
-      for(var disciplina in disciplinasDoDia) {
+      for (var disciplina in disciplinasDoDia) {
         bool alocada = false;
 
-        //Interval Partitioning
-        
-        for(var sala in salas) {
-          if(sala.disciplinas.last.horarioTermino <= disciplina.horarioInicio) {
+        for (var sala in salas) {
+          bool horariosDisponiveis = true;
+
+          for (var outraDisciplina in sala.disciplinas) {
+            if (outraDisciplina.diasSemana.any((dia) => disciplina.diasSemana.contains(dia)) &&
+                (outraDisciplina.horarioInicio >= disciplina.horarioInicio &&
+                    outraDisciplina.horarioInicio < disciplina.horarioTermino ||
+                    outraDisciplina.horarioTermino > disciplina.horarioInicio &&
+                        outraDisciplina.horarioTermino <= disciplina.horarioTermino)) {
+              horariosDisponiveis = false;
+              break;
+            }
+          }
+
+          if (horariosDisponiveis) {
             sala.disciplinas.add(disciplina);
             alocada = true;
             break;
           }
         }
 
-        if(!alocada) {
+        if (!alocada) {
           String nomeSala = "S${salas.length + 1}";
           Sala novaSala = Sala(nomeSala);
           novaSala.disciplinas.add(disciplina);
