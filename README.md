@@ -12,6 +12,7 @@
 
 ## Vídeo de Apresentação
 
+[Clique aqui para ver o vídeo!](https://unbbr.sharepoint.com/sites/Algoritmo262/Documentos%20Compartilhados/General/Recordings/Nova%20reuni%C3%A3o-20230529_192649-Meeting%20Recording.mp4?web=1)
 
 
 ## Sobre
