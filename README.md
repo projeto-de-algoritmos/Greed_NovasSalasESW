@@ -25,8 +25,6 @@ No projeto, consideramos uma turma de cada disciplina e utilizamos o algoritmo a
 ![Passo 1](./app_images/image1.png)
 ![Passo 2](./app_images/image2.png)
 ![Passo 3](./app_images/image3.png)
-![Passo 4](./app_images/image4.png)
-
 
 ## Instalação
 **Linguagem**: Dart<br>
