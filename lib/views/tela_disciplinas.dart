@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../controllers/turmas_controller.dart';
 import '../models/disciplina.dart';
+import '../widgets/filtro_dia.dart';
+import 'tela_salas.dart';
 
 class TelaDisciplinas extends StatefulWidget {
   final List<Disciplina> disciplinas;
@@ -7,68 +10,43 @@ class TelaDisciplinas extends StatefulWidget {
   const TelaDisciplinas(this.disciplinas, {Key? key}) : super(key: key);
 
   @override
-    TelaDisciplinasState createState() => TelaDisciplinasState();
+    State<TelaDisciplinas> createState() => _TelaDisciplinasState();
 }
 
-class TelaDisciplinasState extends State<TelaDisciplinas> {
+class _TelaDisciplinasState extends State<TelaDisciplinas> {
   int? diaSelecionado;
-
-  String formatarHorario(int minutos) {
-    final time = TimeOfDay(hour: minutos ~/ 60, minute: minutos % 60);
-    return time.format(context);
-  }
+  TurmasController turmasController = TurmasController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('Turmas')),
+        title: const Text('Turmas'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              turmasController.alocarTurmas();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaSalas(turmasController.salas),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              const Text('Filtrar por dias:'),
-              const SizedBox(width: 10),
-              DropdownButton<int>(
-                value: diaSelecionado,
-                onChanged: (value) {
-                  setState(() {
-                    diaSelecionado = value;
-                  });
-                },
-              items: const [
-                DropdownMenuItem<int>(
-                  value: null,
-                  child: Text('Todos'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 1,
-                  child: Text('segunda-feira'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 2,
-                  child: Text('terça-feira'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 3,
-                  child: Text('quarta-feira'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 4,
-                  child: Text('quinta-feira'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 5,
-                  child: Text('sexta-feira'),
-                ),
-                DropdownMenuItem<int>(
-                  value: 6,
-                  child: Text('sábado'),
-                ),
-              ],
-            ),
-          ],
+          FiltroDias(
+            diasSemana: const [1, 2, 3, 4, 5, 6],
+            diaSelecionado: diaSelecionado,
+            aoSelecionar: (dia) {
+              setState(() {
+                diaSelecionado = dia;
+              });
+            },
           ),
           Expanded(
             child: ListView.builder(
@@ -79,7 +57,7 @@ class TelaDisciplinasState extends State<TelaDisciplinas> {
                   return ListTile(
                     title: Text(disciplina.nome),
                     subtitle: Text(
-                      'Horário: ${formatarHorario(disciplina.horarioInicio)} - ${formatarHorario(disciplina.horarioTermino)}',
+                      'Horário: ${turmasController.formatarHorario(disciplina.horarioInicio, context)} - ${turmasController.formatarHorario(disciplina.horarioTermino, context)}',
                     ),
                   );
                 }
